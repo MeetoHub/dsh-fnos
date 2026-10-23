@@ -42,15 +42,26 @@ trim-cli file ls /vol1/1000    # 一层层翻目录找路径
 
 ## 界面预览
 
+<table>
+<tr>
+<td width="54%">
+  <img src="docs/images/picker.png" alt="文件选择浮层：目录可下钻，Ctrl+点击直接引用">
+  <br>
+  <sub><b>文件 / 文件夹选择器</b><br>输入框左侧飞牛图标点开即目录树，文件夹可下钻；<code>Ctrl + 点击</code> 直接以 <code>@文件</code> 引用插入，不用先打 <code>/</code></sub>
+</td>
+<td width="46%">
+  <img src="docs/images/plugin-settings.png" alt="插件详情页：连接设置与授权状态">
+  <br>
+  <sub><b>插件详情页</b><br>主机 / 端口 / 协议 / 证书校验都写在插件自己的页面里，授权状态一目了然，不污染全局设置</sub>
+</td>
+</tr>
+</table>
+
 <div align="center">
-  <img src="docs/images/hero.svg" alt="输入框旁的飞牛图标与文件选择浮层" width="100%" />
+  <img src="docs/images/plugin-row.png" alt="插件列表中的飞牛 NAS 条目" width="100%">
+  <br>
+  <sub>在插件列表里以「飞牛 NAS」出现 —— 标题与图标来自 <code>locale/</code> 与 <code>icon.png</code>，跟随深浅色主题</sub>
 </div>
-
-**① 输入框旁的飞牛图标** — 点开即目录树，`Ctrl + 点击` 直接以 `@文件` 引用插入输入框，不用先打 `/`
-**② 毛玻璃浮层** — 弹性动画 + 跟随 DSH 主题（含第三方皮肤）
-**③ 插件详情页** — 地址 / 端口 / 协议写在插件自己的页面里，不污染全局设置
-
-> 真实界面截图见 **[docs/images/](docs/images/)**（用 `scripts/tools/capture-window.ps1` 从 DSH 窗口直接抓取）
 
 ---
 
