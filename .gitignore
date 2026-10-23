@@ -3,6 +3,12 @@ node_modules/
 dist/
 *.tgz
 
+# ── 私有区：真实设备配置、调试笔记、凭据，永不入库 ──────────────
+.local/
+.env
+.env.*
+!.env.example
+
 # 运行时缓存 / 探测产物
 .cache/
 .probe/

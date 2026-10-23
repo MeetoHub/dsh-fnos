@@ -165,6 +165,18 @@ dsh-fnos/
 
 ---
 
+## 开发
+
+开发循环、分支与版本约定、发布流程，以及三道安全防线（本地 hook / CI / 发布复检）见 **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**。
+
+新克隆仓库后请先启用本地敏感内容扫描：
+
+```bash
+git config core.hooksPath scripts/hooks
+```
+
+---
+
 ## License
 
 MIT —— 仅覆盖本项目自有代码；`bin/` 下的二进制见上一节。
