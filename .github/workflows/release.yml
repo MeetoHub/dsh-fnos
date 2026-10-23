@@ -97,7 +97,8 @@ jobs:
           if [ -f dsh-fnos.tgz ]; then
             for f in dsh-fnos-*.tgz; do
               case "$f" in
-                dsh-fnos.tgz) continue ;;
+                # 完整包：固定别名 + 带版本号的，都有 6 个二进制，不参与本项校验
+                dsh-fnos.tgz|dsh-fnos-[0-9]*) continue ;;
               esac
               n=$(tar -tzf "$f" | grep -c 'package/bin/trim-cli' || true)
               echo "$f → bin 内文件数 $n"
