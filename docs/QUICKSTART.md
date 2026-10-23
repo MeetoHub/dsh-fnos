@@ -11,7 +11,7 @@
 **Windows 电脑用这条**（绝大多数人）：
 
 ```
-plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-win-x64.tgz
+plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-windows-x64.tgz
 ```
 
 **Mac 用这条**（Apple 芯片）：

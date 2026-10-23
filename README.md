@@ -90,18 +90,18 @@ trim-cli file ls /vol1/1000    # 一层层翻目录找路径
 
 | 系统 | 下载量 | 包名 |
 |---|---|---|
-| **Windows x64**（最常见） | **3.1 MB** | `dsh-fnos-win-x64.tgz` |
-| Windows ARM64 | 3.2 MB | `dsh-fnos-win-arm64.tgz` |
-| macOS Apple 芯片 | 4.0 MB | `dsh-fnos-darwin-arm64.tgz` |
-| macOS Intel | 4.2 MB | `dsh-fnos-darwin-x64.tgz` |
-| Linux x64 | 3.7 MB | `dsh-fnos-linux-x64.tgz` |
-| Linux ARM64 | 3.2 MB | `dsh-fnos-linux-arm64.tgz` |
-| 不确定 / 想一次性覆盖所有平台 | 17.6 MB | `dsh-fnos.tgz` |
+| **Windows x64**（最常见） | **3.1 MB** | `dsh-fnos-windows-x64.tgz` |
+| Windows ARM64 | 2.8 MB | `dsh-fnos-windows-arm64.tgz` |
+| macOS Apple 芯片 | 3.3 MB | `dsh-fnos-darwin-arm64.tgz` |
+| macOS Intel | 3.4 MB | `dsh-fnos-darwin-x64.tgz` |
+| Linux x64 | 3.3 MB | `dsh-fnos-linux-x64.tgz` |
+| Linux ARM64 | 3.1 MB | `dsh-fnos-linux-arm64.tgz` |
+| 不确定 / 想一次覆盖所有平台 | 17.5 MB | `dsh-fnos.tgz` |
 
 以 Windows x64 为例：
 
 ```
-plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-win-x64.tgz
+plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-windows-x64.tgz
 ```
 
 > **为什么分平台**：官方 trim-cli 有 6 个平台的二进制，合计 41 MB。
