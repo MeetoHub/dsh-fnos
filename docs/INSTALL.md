@@ -40,6 +40,31 @@ plugin_manager  install_bundle  target = github:MeetoHub/dsh-fnos
 github:MeetoHub/dsh-fnos#v0.1.0
 ```
 
+> ### ⚠️ 装完之后：任何远程 URL 依赖都会拖慢后续安装
+>
+> 用 `https://…/dsh-fnos-x.y.z.tgz` 这种**远程 URL** 装进 profile 后，它就成了
+> 一条"每次都要联网校验"的依赖。此后你安装**任何其它插件**，pnpm 都会重新解析
+> 整张依赖图并再次请求这个地址。
+>
+> 若该地址不可达（部分网络对 GitHub releases 会超时 ~21 秒），症状是
+> **「插件安装中…」一直转圈、新插件装不上**——而且几乎不可能联想到是 fnos 引起的。
+>
+> **自查**：
+>
+> ```bash
+> grep 'https\?://' "$DSH_PROFILE_DIR/package.json"
+> ```
+>
+> 有输出就说明存在远程依赖。改成下面任一种即可消除：
+>
+> ```bash
+> # 开发态：本地软链，不联网
+> plugin_manager  install_bundle  target = /path/to/dsh-fnos
+>
+> # 离线：tgz 下到本地后按文件路径装
+> plugin_manager  install_bundle  target = file:/path/to/dsh-fnos-0.2.2.tgz
+> ```
+
 ---
 
 ## 方式三：从 npm 安装

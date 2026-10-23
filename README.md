@@ -98,6 +98,28 @@ plugin_manager  install_bundle  target = github:MeetoHub/dsh-fnos
 
 > 会完整拉取仓库（含 `bin/` 二进制），比上一个慢。要固定版本加 `#v0.1.2`。
 
+> ### ⚠️ 网络受限时不要用远程 URL 安装
+>
+> 用 `https://…/dsh-fnos-x.y.z.tgz` 这类**远程 URL** 装进 profile 后，pnpm 会把它当作
+> 一条需要联网校验的依赖。之后你**安装任何其它插件**，pnpm 都会重新解析整张依赖图，
+> 从而再次请求这个 GitHub 地址。
+>
+> 如果该地址不可达（实测部分网络对 GitHub releases 超时 21 秒），表现为
+> **「插件安装中…」一直转圈、新插件装不上**，而且很难联想到是 fnos 引起的。
+>
+> 受限网络下的正确做法：
+>
+> ```bash
+> # ① 开发态：本地软链，完全不联网
+> plugin_manager  install_bundle  target = /path/to/dsh-fnos
+>
+> # ② 离线安装：先把 tgz 下到本地，再用文件路径
+> plugin_manager  install_bundle  target = file:/path/to/dsh-fnos-0.2.2.tgz
+> 
+> # ③ 确认 profile 里没有残留的远程依赖
+> grep 'https\?://' "$DSH_PROFILE_DIR/package.json"
+> ```
+
 ### 源码开发态
 
 ```bash
