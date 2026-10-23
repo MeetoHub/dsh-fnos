@@ -65,13 +65,55 @@ jobs:
           if [ -f package.json ]; then
             npm pack --dry-run
             npm pack
-            echo "---- 产物 ----"
+            FULL="$(ls dsh-fnos-*.tgz | head -1)"
+            echo "---- 完整包（含全平台 CLI）----"
+            ls -lh "$FULL"
+
+            # 分平台包：只保留本平台那一个二进制，体积约为完整包的 1/3。
+            # CLI 依旧随包提供，离线可用；只是不再下载用不到的另外 5 个平台。
+            for target in win-x64 win-arm64 darwin-x64 darwin-arm64 linux-x64 linux-arm64; do
+              rm -rf build && mkdir -p build
+              tar -xzf "$FULL" -C build
+              rm -f build/package/bin/*
+              if ! cp bin/trim-cli-"$target"* build/package/bin/ 2>/dev/null; then
+                echo "  跳过 $target（仓库里没有对应二进制）"
+                continue
+              fi
+              tar -czf "dsh-fnos-$target.tgz" -C build package
+              echo "  -> dsh-fnos-$target.tgz  $(du -h "dsh-fnos-$target.tgz" | cut -f1)"
+            done
+            rm -rf build
+
+            # 固定文件名，让 releases/latest/download/dsh-fnos.tgz 永久可用
+            cp "$FULL" dsh-fnos.tgz
+            echo "---- 全部产物 ----"
             ls -lh *.tgz
-            # 额外产出一个固定文件名，让 releases/latest/download/dsh-fnos.tgz 永久可用
-            cp dsh-fnos-*.tgz dsh-fnos.tgz
-            ls -lh dsh-fnos.tgz
           else
             echo "无 package.json，跳过 npm pack"
+          fi
+
+      - name: 校验分平台包的 CLI 完整性
+        run: |
+          if [ -f dsh-fnos.tgz ]; then
+            for f in dsh-fnos-*.tgz; do
+              case "$f" in
+                dsh-fnos.tgz) continue ;;
+              esac
+              n=$(tar -tzf "$f" | grep -c 'package/bin/trim-cli' || true)
+              echo "$f → bin 内文件数 $n"
+              if [ "$n" -ne 1 ]; then
+                echo "::error::$f 里 CLI 数量不是 1，分平台包构建有问题"
+                exit 1
+              fi
+            done
+          fi
+
+      - name: 生成 CLI 校验值
+        run: |
+          if [ -d bin ]; then
+            ( cd bin && sha256sum * > ../checksums.txt )
+            echo "---- checksums.txt ----"
+            cat checksums.txt
           fi
 
       - name: 创建 GitHub Release
@@ -80,8 +122,12 @@ jobs:
         run: |
           TAG="${{ inputs.tag || github.ref_name }}"
           if ls *.tgz >/dev/null 2>&1; then
-            # 同时上传：带版本号的精确文件 + 固定别名的稳定链接
-            gh release create "$TAG" --title "$TAG" --generate-notes dsh-fnos-*.tgz dsh-fnos.tgz
+            # 完整包 + 分平台包 + 固定别名
+            ASSETS="dsh-fnos-*.tgz dsh-fnos.tgz"
+            # 单独上传各平台 CLI 与校验值：供"包内没有二进制"时按需下载兜底
+            if [ -f checksums.txt ]; then ASSETS="$ASSETS checksums.txt"; fi
+            if [ -d bin ]; then ASSETS="$ASSETS bin/trim-cli-*"; fi
+            gh release create "$TAG" --title "$TAG" --generate-notes $ASSETS
           else
             gh release create "$TAG" --title "$TAG" --generate-notes
           fi

@@ -84,11 +84,29 @@ trim-cli file ls /vol1/1000    # 一层层翻目录找路径
 
 ### 最快（推荐）
 
-在 DSH 里把 Release 的 tgz 地址交给插件管理器：
+在 DSH 里把 Release 的 tgz 地址交给插件管理器。
+
+**按你的系统选一个**（包里已含本平台的 trim-cli，装完即可用，无需再下载）：
+
+| 系统 | 下载量 | 包名 |
+|---|---|---|
+| **Windows x64**（最常见） | **3.1 MB** | `dsh-fnos-win-x64.tgz` |
+| Windows ARM64 | 3.2 MB | `dsh-fnos-win-arm64.tgz` |
+| macOS Apple 芯片 | 4.0 MB | `dsh-fnos-darwin-arm64.tgz` |
+| macOS Intel | 4.2 MB | `dsh-fnos-darwin-x64.tgz` |
+| Linux x64 | 3.7 MB | `dsh-fnos-linux-x64.tgz` |
+| Linux ARM64 | 3.2 MB | `dsh-fnos-linux-arm64.tgz` |
+| 不确定 / 想一次性覆盖所有平台 | 17.6 MB | `dsh-fnos.tgz` |
+
+以 Windows x64 为例：
 
 ```
-plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos.tgz
+plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-win-x64.tgz
 ```
+
+> **为什么分平台**：官方 trim-cli 有 6 个平台的二进制，合计 41 MB。
+> 全部塞进一个包，用户要多下十几 MB 才能用；只装自己那一个，下载量降到 1/5.7。
+> 完整包 `dsh-fnos.tgz` 仍然保留，兼容不确定自己平台的情况。
 
 ### 粘仓库地址
 

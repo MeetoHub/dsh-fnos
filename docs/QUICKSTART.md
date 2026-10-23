@@ -6,13 +6,27 @@
 
 ## 第 1 步：装
 
-在 DSH 的输入框里发这句话（也可以直接交给 DSH 的 Agent）：
+在 DSH 的输入框里发这句话（也可以直接交给 DSH 的 Agent）。
+
+**Windows 电脑用这条**（绝大多数人）：
+
+```
+plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-win-x64.tgz
+```
+
+**Mac 用这条**（Apple 芯片）：
+
+```
+plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-darwin-arm64.tgz
+```
+
+**不确定的话用这条**（会大一些，但任何系统都能用）：
 
 ```
 plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos.tgz
 ```
 
-等它显示安装完成（大约 1–2 分钟，文件有 18 MB）。
+等它显示安装完成。Windows 那条只有 3.1 MB，一般半分钟就好了。
 
 ---
 
