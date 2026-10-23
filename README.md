@@ -155,6 +155,16 @@ dsh-fnos/
 
 ---
 
+## 关于 `bin/` 里的二进制
+
+`bin/` 下是 fnOS 官方的 `trim-cli` 预编译产物（六个平台各一份，共约 41 MB），随插件一同分发以便开箱可用。
+
+**这些不是本项目的产物**，版权归飞牛 fnOS 所有，使用须遵守飞牛的相关条款与许可。本项目的 MIT 许可只覆盖自己编写的代码，即 `lib/`、`cordis.patch.yml`、`locale/`、`entries/`、`reference/`、`scripts/`、`README.md` 等文件。
+
+如果要在自己的分发中替换或去掉这些二进制：删掉 `bin/`，并把 `trim-cli` 放到 PATH 即可（`lib/impl.js` 的 `cliPath()` 会优先用包内路径）。
+
+---
+
 ## License
 
-MIT
+MIT —— 仅覆盖本项目自有代码；`bin/` 下的二进制见上一节。
