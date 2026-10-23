@@ -146,6 +146,42 @@ FNO_TRIM_CLI 环境变量  →  包内 bin/  →  系统 PATH
 
 ---
 
+## 技能与 CLI 的更新
+
+官方技能包是**带版本号的 zip**（含 `SKILL.md`、`entries/`、`reference/`、`bin/trim-cli`），
+版本与 SHA256 公布在官网下载页。本插件启动时会**非阻塞地**检查并同步最新版：
+
+| 步骤 | 说明 |
+|---|---|
+| 检查 | 抓 `fnnas.com/download`，解析官方公布的 `{version, url, sha256}` |
+| 下载 | ① 直连官方 CDN → ② Release 镜像 |
+| 校验 | SHA256 必须一致，否则整包丢弃 |
+| 安装 | 解压到 `~/.dsh/fnos-skill/v{ver}/`，成功后**原子切换** `current.json` |
+| 兜底 | 失败静默，已装版本继续可用；装坏可回退 |
+
+CLI 查找顺序随之升级为四级：
+
+```
+FNO_TRIM_CLI  →  官方技能包 bin/  →  插件内 bin/  →  系统 PATH
+```
+
+技能内容也优先取同步下来的官方版本（`source: runtime`），所以文档不会随插件发版而落后。
+
+### 官方 CDN 被墙时
+
+部分网络对 `iso.liveupdate.fnnas.com` 直接返回 403（实测 curl / Node / 真实浏览器内核均被挡）。
+这时把官方 zip 放进下面这个目录，重载插件即自动安装（文件名任意，`.zip` 结尾即可）：
+
+```
+~/.dsh/fnos-skill/incoming/fnos-skill.zip
+```
+
+安装成功后会重命名为 `*.done-<时间戳>` 归档，不会重复安装。
+
+关闭自动同步：设环境变量 `FNO_SKILL_SYNC=0`。
+
+---
+
 ## 安全与隐私
 
 - **凭据不出本机**：授权状态由 `trim-cli` 自己管理，插件不落盘任何 token
