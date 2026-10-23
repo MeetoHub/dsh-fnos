@@ -70,7 +70,10 @@ pnpm add dsh-fnos
 | fnOS 设备 | 开启 OpenAPI 访问，端口默认 `5667`（HTTPS） |
 | 网络 | 本机能访问到设备；自签证书会被自动容忍 |
 
-> `bin/` 下已随包附带六个平台的 `trim-cli`，无需自行安装。若想用自己的：删掉 `bin/`，把 `trim-cli` 放进 `PATH` 即可（`lib/impl.js` 的 `cliPath()` 会退回 PATH 查找）。
+> **关于 `trim-cli`**：本插件的一切能力都建立在调用 fnOS 官方 CLI `trim-cli` 之上。
+> 包内 `bin/` 已附带六个平台的预编译产物（共约 41 MB），装完即可用，无需单独安装。
+> 如果要用自己的版本，查找顺序是：`FNO_TRIM_CLI` 环境变量 → 包内 `bin/` → 系统 `PATH`。
+> 详见 README 的「关于 `bin/` 里的二进制」。
 
 ---
 
