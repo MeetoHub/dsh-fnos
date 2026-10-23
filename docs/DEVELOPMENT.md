@@ -4,6 +4,14 @@
 
 规矩很简单：**敏感的东西从不进 git，而不是进了再删。**
 
+> **关于本文提到的扫描器 / hook / CI 工作流**
+> 它们由 `opensource-guard` 技能生成，不是本项目手写的：
+> ```bash
+> node <skills>/opensource-guard/scripts/install.mjs .
+> ```
+> 因此**请勿手改生成物**（重装会覆盖）。要定制规则，写项目根的 `.leakscan.json`。
+> 泄露应急流程见该技能的 `reference/leak-response.md`。
+
 ---
 
 ## 一、目录三分区
@@ -118,17 +126,17 @@ pnpm add https://github.com/MeetoHub/dsh-fnos/releases/download/v0.1.1/dsh-fnos-
 git config core.hooksPath scripts/hooks
 ```
 
-hook 随仓库版本化，改规则只需改 `scripts/precommit-scan.mjs`。
+hook 随仓库版本化，改规则只需改 `scripts/leakscan.mjs`。
 
 ### 命中被拦怎么办
 
 ```bash
 # 看具体命中什么
-node scripts/precommit-scan.mjs
+node scripts/leakscan.mjs
 ```
 
 - **真敏感** → 移到 `.local/`，然后 `git rm --cached` 掉已暂存的那份
-- **误报** → 往 `scripts/precommit-scan.mjs` 的 `ALLOW` 里加**精确**的放行规则，不要放宽 `DENY`
+- **误报** → 往 `scripts/leakscan.mjs` 的 `ALLOW` 里加**精确**的放行规则，不要放宽 `DENY`
 
 ### 万一已经提交了
 
@@ -168,7 +176,7 @@ gh repo create <owner>/<repo> --public --source=. --push
 | 我想… | 命令 |
 |---|---|
 | 语法自检 | `node --check lib/client.js` |
-| 扫敏感内容 | `node scripts/precommit-scan.mjs`（暂存区）/ `--all` / `--history` |
+| 扫敏感内容 | `node scripts/leakscan.mjs`（暂存区）/ `--all` / `--history` |
 | 让 DSH 重载插件 | 插件管理器里关一次再开 |
 | 发版 | 改 version → commit → `git tag vX.Y.Z` → push tag |
 | 看发布结果 | `gh release list` |

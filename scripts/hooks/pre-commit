@@ -1,15 +1,15 @@
 #!/bin/sh
-# pre-commit 钩子：敏感内容扫描
+# pre-commit：敏感内容扫描（由 opensource-guard 安装）
 #
-# 通过 `git config core.hooksPath scripts/hooks` 启用，随仓库一起版本化，
-# 新克隆的仓库执行一次上面那条命令即可生效。
-#
-# 想知道它为什么拦你：直接跑 `node scripts/precommit-scan.mjs`。
+# 启用：git config core.hooksPath scripts/hooks
+# 手动跑：node scripts/leakscan.mjs
+# 临时跳过：git commit --no-verify（CI 仍会拦）
 
 root=$(git rev-parse --show-toplevel) || exit 0
+
 if ! command -v node >/dev/null 2>&1; then
   echo "pre-commit: 未找到 node，跳过敏感内容扫描" >&2
   exit 0
 fi
 
-node "$root/scripts/precommit-scan.mjs" || exit 1
+node "$root/scripts/leakscan.mjs" || exit 1

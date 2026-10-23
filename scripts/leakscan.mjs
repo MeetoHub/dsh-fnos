@@ -1,23 +1,34 @@
 #!/usr/bin/env node
 /**
- * pre-commit 敏感内容扫描
+ * leakscan —— 敏感内容扫描器（由 opensource-guard 技能安装）
  *
- * 扫的是**暂存区内容**（即将进入提交的东西），不是工作树 —— 这样被 .gitignore
- * 忽略的文件不会误报，而 `git add -f` 强行加进来的会被抓住。
+ * ⚠️ 本文件是生成物：重装技能会覆盖。要定制请写项目根的 `.leakscan.json`。
  *
- * 设计原则：宁可拦错，不可漏放。真有例外就往下面 ALLOW 里加明确的放行规则，
- * 而不是放宽 DENY。
+ * 扫描目标：
+ *   （默认）  暂存区内容        —— pre-commit 用
+ *   --all     所有被跟踪文件    —— CI 用
+ *   --history 全部提交新增的行  —— CI 用（防历史残留）
+ *
+ * 退出码：0 通过 / 1 命中
+ *
+ * 配置（可选，项目根 .leakscan.json）：
+ *   {
+ *     "allow": ["正则字符串"],
+ *     "deny": [{ "name": "...", "pattern": "正则字符串" }],
+ *     "skip": ["^vendor/"]
+ *   }
  */
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
+import { join } from 'node:path'
 
-// ── 拦截规则 ────────────────────────────────────────────────────────────────
+// ── 默认拦截规则 ────────────────────────────────────────────────────────────
 const DENY = [
   {
-    name: '内网/Tailscale 地址',
+    name: '内网/CGNAT 地址',
     re: /\b(?:10\.\d{1,3}|127\.\d{1,3}|192\.168|172\.(?:1[6-9]|2\d|3[01])|100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7]))\.\d{1,3}\.\d{1,3}\b/g,
   },
-  { name: '本机用户路径', re: /[A-Za-z]:\\Users\\[^\\\s"'`]+/g },
+  { name: '本机用户路径', re: /[A-Za-z]:\\Users\\[^\\\s"'`]+|\/Users\/[^/\s"'`]+/g },
   { name: '邮箱地址', re: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g },
   { name: 'AWS Access Key', re: /AKIA[0-9A-Z]{16}/g },
   { name: 'GitHub Token', re: /gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}/g },
@@ -29,50 +40,61 @@ const DENY = [
     name: '疑似硬编码凭据',
     re: /\b(?:password|passwd|pwd|secret|api[_-]?key|access[_-]?token|refresh[_-]?token)\b\s*[:=]\s*["'][^"'\s]{8,}["']/gi,
   },
-  { name: '飞牛 trim token', re: /trim-access-token|web\.token\s*[:=]/g },
 ]
 
-// ── 放行规则（按行判定：命中 DENY 的行若同时命中这里，则跳过）────────────────
+// ── 默认放行（按行判定）──────────────────────────────────────────────────────
 const ALLOW = [
-  /\bre:\s*\//,                          // 规则定义里的正则字面量，不是真实凭据（避免扫描器自引用误报）
-  /\b192\.168\.1\.10\b/,                 // 文档里的通用示例 IP
-  /\b(?:127\.0\.0\.1|0\.0\.0\.0)\b/,     // 本机回环，无敏感信息
+  /\bre:\s*\//,                          // 规则定义里的正则字面量（避免扫描器自引用误报）
+  /\b192\.168\.1\.10\b/,                 // 文档通用示例 IP
+  /\b(?:127\.0\.0\.1|0\.0\.0\.0)\b/,
   /example\.com|example\.org|localhost/,
   /noreply@github\.com|users\.noreply\.github\.com/,
   /placeholder|占位|示例|例如|如\s*\d|your-|YOUR_|<[^>]*>/,
 ]
 
-// ── 不扫的文件（二进制 / 锁文件 / 已核验的第三方产物）───────────────────────
+// ── 默认跳过 ────────────────────────────────────────────────────────────────
 const SKIP = [
   /^bin\//,
   /\.(png|jpe?g|gif|webp|ico|pdf|zip|gz|tgz|exe|node|woff2?|ttf|otf|wasm)$/i,
   /^(?:pnpm-lock\.yaml|package-lock\.json|yarn\.lock)$/,
+  /^scripts\/leakscan\.mjs$/,
 ]
 
-function git(args, opts = {}) {
-  return execFileSync('git', args, {
-    encoding: 'utf8',
-    maxBuffer: 64 * 1024 * 1024,
-    // 吞掉 stderr：取不到某个版本时（新文件不在 HEAD 里）不算错误，
-    // 由调用方 try/catch 回落处理，不必污染输出。
-    stdio: ['ignore', 'pipe', 'ignore'],
-    ...opts,
-  })
+// ── 项目配置叠加 ────────────────────────────────────────────────────────────
+function loadConfig() {
+  const p = join(process.cwd(), '.leakscan.json')
+  if (!existsSync(p)) return
+  let cfg
+  try {
+    cfg = JSON.parse(readFileSync(p, 'utf8'))
+  } catch (e) {
+    console.error(`.leakscan.json 解析失败，已忽略：${e.message}`)
+    return
+  }
+  for (const s of cfg.allow ?? []) ALLOW.push(new RegExp(s))
+  for (const s of cfg.skip ?? []) SKIP.push(new RegExp(s))
+  for (const d of cfg.deny ?? []) {
+    if (d?.name && d?.pattern) DENY.push({ name: d.name, re: new RegExp(d.pattern, 'g') })
+  }
 }
+loadConfig()
 
-/**
- * 扫描目标：
- *   （默认）  暂存区内容 —— pre-commit 用
- *   --all     所有被跟踪的文件 —— CI 用
- *   --history 全部提交里新增过的行 —— CI 用（防止历史残留）
- */
+// ── 工具 ────────────────────────────────────────────────────────────────────
 const MODE = process.argv.includes('--history')
   ? 'history'
   : process.argv.includes('--all')
     ? 'all'
     : 'staged'
 
-/** 对一段文本做扫描，把命中项 push 进 findings。 */
+function git(args, opts = {}) {
+  return execFileSync('git', args, {
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'ignore'], // 吞掉「新文件不在 HEAD 里」这类非错误噪音
+    ...opts,
+  })
+}
+
 function scanText(content, file, offsetLine, findings) {
   if (content.includes('\u0000')) return // 二进制
   const lines = content.split('\n')
@@ -81,14 +103,8 @@ function scanText(content, file, offsetLine, findings) {
     if (ALLOW.some((re) => re.test(line))) continue
     for (const rule of DENY) {
       rule.re.lastIndex = 0
-      const m = rule.re.exec(line)
-      if (!m) continue
-      findings.push({
-        file,
-        line: offsetLine + i + 1,
-        rule: rule.name,
-        text: line.trim().slice(0, 100),
-      })
+      if (!rule.re.exec(line)) continue
+      findings.push({ file, line: offsetLine + i + 1, rule: rule.name, text: line.trim().slice(0, 100) })
     }
   }
 }
@@ -116,10 +132,9 @@ function main() {
       try {
         content = MODE === 'staged' ? git(['show', `:${file}`]) : git(['show', `HEAD:${file}`])
       } catch {
-        // 暂存区取不到（已删除等）→ 跳过；HEAD 取不到（新文件尚未提交）→ 回落到磁盘
         if (MODE === 'staged') continue
         try {
-          content = readFileSync(file, 'utf8')
+          content = readFileSync(file, 'utf8') // 新文件尚未提交
         } catch {
           continue
         }
@@ -129,7 +144,6 @@ function main() {
   }
 
   if (MODE === 'history') {
-    // 汇总所有提交新增的行：只扫 '+' 开头、且不是 diff 头的行
     let patch
     try {
       patch = git(['log', '--all', '--no-merges', '-p', '--unified=0', '--', '.', ':!bin'])
@@ -170,8 +184,8 @@ function main() {
   }
   if (findings.length > 50) console.error(`  …共 ${findings.length} 处`)
   console.error('')
-  console.error('若确认无害，把例外加进 scripts/precommit-scan.mjs 的 ALLOW 规则；')
-  console.error('若是真敏感信息，请移到 .local/（已被 .gitignore 忽略）后重试。')
+  console.error('真敏感 → 移到 .local/（已 gitignore）并 git rm --cached；')
+  console.error('误报   → 往项目根 .leakscan.json 的 allow 里加精确规则。')
   console.error('')
   return 1
 }
