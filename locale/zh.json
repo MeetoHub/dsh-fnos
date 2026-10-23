@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "飞牛 NAS",
+    "description": "从本机远程管理飞牛 fnOS：授权登录、文件、存储池、Docker、下载、相册与系统监控。"
+  }
+}

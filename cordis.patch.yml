@@ -1,0 +1,26 @@
+# dsh-fnos 的 bundle 补丁。
+#
+# 单行：id 与 name 都等于包名 `dsh-fnos`。这是官方文档的标准写法，也是唯一正确的写法：
+#
+#   - 客户端模块扫描按 **包名** 认行（行 name 用别名会让"宿主半边照常工作、而界面
+#     静默消失"），所以 name 必须是 `dsh-fnos`。
+#   - 宿主装载需要 import 这个裸包名 —— 实测它现在能解析成功（profile 的 node_modules
+#     里 dsh-fnos 是指向本目录的 junction）。
+#
+# 踩过的两个坑，都不要再回去：
+#
+#   1. 早期裸包名解析失败（fiberPhase: failed），是因为当时用了 `link:` 之外的装法 /
+#      包还没成为 profile 依赖。修成 profile 正式依赖后裸包名可用。
+#   2. 曾经为了绕开解析失败，加了一行 name 为 file URL 的 `dsh-fnos-host`。
+#      结果两行指向同一个 lib/index.js，第二次装载时报
+#        tool "fnos_probe" is already registered
+#        webserver: duplicate exact route "/plugins/dsh-fnos/probe"
+#      所以必须只保留一行。
+# ⚠️ row id 必须避开官方插件：`@tnnevol/dsh-fnos` 用的 id 也是 `dsh-fnos`，
+# 两者同名会被覆盖（实测：我的行根本没被创建，所有路由 404）。
+# 所以这里 id 用 `dsh-fnos-remote`，但 **name 保持包名** —— 客户端模块扫描是靠
+# name 认行的（行 name 用别名会让"宿主半边照常工作、而界面静默消失"）。
+- insert:
+    - id: dsh-fnos-remote
+      name: dsh-fnos
+      config: {}

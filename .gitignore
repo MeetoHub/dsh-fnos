@@ -1,0 +1,19 @@
+# 依赖与构建产物
+node_modules/
+dist/
+*.tgz
+
+# 运行时缓存 / 探测产物
+.cache/
+.probe/
+*.log
+*.bak
+
+# NAS 打包物料（586 MB，含 npm 缓存，不入库）
+nas-fpk/
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

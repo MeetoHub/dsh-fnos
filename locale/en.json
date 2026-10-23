@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "fnOS NAS",
+    "description": "Remote-manage a 飞牛 fnOS device from this machine: authorization, files, storage pools, Docker, downloads, photos, and system monitoring."
+  }
+}

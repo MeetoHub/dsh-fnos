@@ -1,0 +1,66 @@
+{
+  "name": "dsh-fnos",
+  "displayName": "fnos",
+  "version": "0.1.0",
+  "description": "飞牛 fnOS 的 DSH 插件：远程授权登录、文件/文件夹 @引用选择器、目录树后台缓存",
+  "documentation": "https://github.com/MeetoHub/dsh-fnos",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MeetoHub/dsh-fnos.git"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "fnos",
+    "飞牛",
+    "nas",
+    "trim-cli"
+  ],
+  "type": "module",
+  "main": "lib/entry.js",
+  "exports": {
+    ".": "./lib/entry.js",
+    "./client": "./lib/client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./package.json": "./package.json"
+  },
+  "icon": "icon.png",
+  "files": [
+    "icon.png",
+    "locale",
+    "lib",
+    "bin",
+    "entries",
+    "reference",
+    "scripts",
+    "cordis.patch.yml",
+    "SKILL.md",
+    "manifest.json"
+  ],
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.2.0-rc.2"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-input-trigger",
+        "@deepseek-ai/dsh-client-ui-plugin-manager",
+        "@deepseek-ai/dsh-client-ui-primitives",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}
