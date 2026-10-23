@@ -32,23 +32,36 @@ plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/re
 
 ## ⚠️ 最容易犯的错：粘错地址
 
-**下面这个地址装不上**（它是仓库网页，不是安装包）：
-
-```
-❌ https://github.com/MeetoHub/dsh-fnos          ← 浏览器地址栏那个
-❌ https://github.com/MeetoHub/dsh-fnos.git      ← 加了 .git 也不行
-```
-
-**要粘的是 `.tgz` 结尾的下载链接**（见上面第 1 步），或者用仓库简写语法：
+DSH 的「添加插件」框里，**只有下面这些写法能装成功**（都实测过）：
 
 ```
 ✅ https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-windows-x64.tgz
-✅ github:MeetoHub/dsh-fnos                      ← 注意没有 https://，是 github: 开头
+✅ github:MeetoHub/dsh-fnos
 ```
 
-判断方法：**结尾是 `.tgz`，或者开头是 `github:`**。两者都不是，就一定装不上。
+**下面这些一定装不上**：
 
-如果装的时候只显示「无输出」「安装失败」，九成是地址错。
+```
+❌ https://github.com/MeetoHub/dsh-fnos          ← 浏览器地址栏那个（网页不是安装包）
+❌ https://github.com/MeetoHub/dsh-fnos.git      ← 加 .git 也不行
+❌ MeetoHub/dsh-fnos                             ← 少了 github: 前缀
+```
+
+判断方法：
+
+- **结尾是 `.tgz`** → 可以
+- **开头是 `github:`** → 可以
+- 其它 → 一定装不上
+
+> 注意 `github:` 后面**不要**加 `https://`，就是 `github:MeetoHub/dsh-fnos` 这几个字。
+>
+> 另外：`MeetoHub/dsh-fnos` 这种少了前缀的写法不只是失败，还会把已经装好的插件**移除掉**，
+> 装完发现插件不见了，多半就是这个原因。
+
+如果你的 DSH 里没显示「添加插件」以外的入口，也可以直接把下面这句发给 DSH 的 Agent：
+
+> 帮我用 `plugin_manager install_bundle` 安装
+> `https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-windows-x64.tgz`
 
 ---
 
