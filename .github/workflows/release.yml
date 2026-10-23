@@ -1,0 +1,92 @@
+name: Release
+
+# 第三道防线（opensource-guard）：打 tag 即发布，发布前最后复检一遍。
+#
+# 流程：校验版本一致 → 语法检查 → 敏感内容复检 → 打包 → 建 Release
+#
+# 用法：
+#   git tag v0.2.0 && git push origin v0.2.0
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '要发布的 tag（如 v0.2.0）'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: 构建并发布
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 校验 tag 与 package.json 版本一致
+        run: |
+          TAG="${{ inputs.tag || github.ref_name }}"
+          if [ ! -f package.json ]; then
+            echo "无 package.json，跳过版本校验（tag=$TAG）"
+            exit 0
+          fi
+          PKG=$(node -p "require('./package.json').version")
+          echo "tag=$TAG  package.json=$PKG"
+          if [ "v$PKG" != "$TAG" ]; then
+            echo "::error::tag 与 package.json 版本不一致：tag=$TAG，package.json=v$PKG"
+            echo "先改 version 再打 tag。"
+            exit 1
+          fi
+
+      - name: 语法检查
+        run: |
+          shopt -s nullglob
+          files=(lib/*.js scripts/*.mjs *.mjs)
+          if [ ${#files[@]} -eq 0 ]; then echo "无可检查的 JS/MJS 文件"; exit 0; fi
+          for f in "${files[@]}"; do node --check "$f"; done
+          echo "语法检查通过（${#files[@]} 个文件）"
+
+      - name: 敏感内容复检（发布前最后一道）
+        run: |
+          node scripts/leakscan.mjs --all
+          node scripts/leakscan.mjs --history
+
+      - name: 打包并检查内容
+        run: |
+          if [ -f package.json ]; then
+            npm pack --dry-run
+            npm pack
+            echo "---- 产物 ----"
+            ls -lh *.tgz
+          else
+            echo "无 package.json，跳过 npm pack"
+          fi
+
+      - name: 创建 GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ inputs.tag || github.ref_name }}"
+          if ls *.tgz >/dev/null 2>&1; then
+            gh release create "$TAG" --title "$TAG" --generate-notes *.tgz
+          else
+            gh release create "$TAG" --title "$TAG" --generate-notes
+          fi
+
+      # 需要发 npm 时，在 Settings → Secrets 配 NPM_TOKEN 后取消注释
+      # - name: Publish to npm
+      #   if: ${{ env.NPM_TOKEN != '' }}
+      #   env:
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      #   run: |
+      #     echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+      #     npm publish --access public
