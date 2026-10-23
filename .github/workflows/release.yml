@@ -67,6 +67,9 @@ jobs:
             npm pack
             echo "---- 产物 ----"
             ls -lh *.tgz
+            # 额外产出一个固定文件名，让 releases/latest/download/dsh-fnos.tgz 永久可用
+            cp dsh-fnos-*.tgz dsh-fnos.tgz
+            ls -lh dsh-fnos.tgz
           else
             echo "无 package.json，跳过 npm pack"
           fi
@@ -77,7 +80,8 @@ jobs:
         run: |
           TAG="${{ inputs.tag || github.ref_name }}"
           if ls *.tgz >/dev/null 2>&1; then
-            gh release create "$TAG" --title "$TAG" --generate-notes *.tgz
+            # 同时上传：带版本号的精确文件 + 固定别名的稳定链接
+            gh release create "$TAG" --title "$TAG" --generate-notes dsh-fnos-*.tgz dsh-fnos.tgz
           else
             gh release create "$TAG" --title "$TAG" --generate-notes
           fi

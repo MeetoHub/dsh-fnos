@@ -1,0 +1,56 @@
+# NOTICE
+
+本仓库包含第三方软件，特此声明。
+
+---
+
+## 本项目自有代码
+
+`lib/`、`cordis.patch.yml`、`locale/`、`entries/`、`reference/`、`scripts/`、
+`docs/`、`README.md`、`SKILL.md`、`manifest.json`、`icon.png` 及构建配置
+—— 版权归 MeetoHub 所有，以 **MIT** 许可发布，见 [LICENSE](LICENSE)。
+
+---
+
+## 第三方组件：飞牛 fnOS `trim-cli`
+
+`bin/` 目录下包含六个平台的 `trim-cli` 预编译可执行文件：
+
+```
+bin/trim-cli-windows-x64.exe
+bin/trim-cli-windows-arm64.exe
+bin/trim-cli-darwin-x64
+bin/trim-cli-darwin-arm64
+bin/trim-cli-linux-x64
+bin/trim-cli-linux-arm64
+```
+
+**这些不是本项目的产物。**
+
+- **版权**：归 飞牛 fnOS（fnnas.com）所有
+- **来源**：飞牛官方 CLI 分发渠道 <https://fnnas.com/download?key=cli>
+- **用途**：仅作为本插件的运行时依赖随包分发，以便用户安装后即可使用
+- **授权边界**：**MIT 许可不覆盖这些二进制**。它们的复制、分发与使用须遵守飞牛官方的
+  相关条款与许可；本项目不对其作出任何再授权
+- **可替换性**：删除 `bin/` 后，插件会按 `FNO_TRIM_CLI` 环境变量 → 系统 `PATH`
+  的顺序查找 `trim-cli`，功能不受影响
+
+### 如果你要再分发本项目
+
+请自行确认飞牛对 `trim-cli` 的分发条款。若要规避该问题，最简单的做法是
+**不随包附带上表的二进制**，改为让用户从官方渠道获取后放入 `bin/` 或 `PATH`。
+
+---
+
+## 技能文档
+
+`SKILL.md`、`entries/`、`reference/` 源自飞牛官方发布的 AI 技能包
+（`fnos-skill-v*.zip`，官方分发地址见上），本项目对其进行适配与打包，
+以配合 DSH 插件的技能注册机制使用。原始内容的版权归飞牛所有。
+
+---
+
+## 商标
+
+「飞牛」「fnOS」「FygoOS」等名称与标识归其各自所有者。
+本项目为社区第三方插件，**与飞牛官方无隶属或背书关系**。

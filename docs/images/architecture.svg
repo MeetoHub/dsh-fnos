@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" fill="none" role="img" aria-label="dsh-fnos 架构：客户端半边 + 宿主半边 + trim-cli + fnOS">
+  <defs>
+    <linearGradient id="abg" x1="0" y1="0" x2="1280" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A0D14"/>
+      <stop offset="1" stop-color="#0C121C"/>
+    </linearGradient>
+    <pattern id="agrid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" stroke="#FFFFFF" stroke-opacity="0.03" stroke-width="1"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#3B82F6"/>
+    </marker>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#2DD4BF"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="640" fill="url(#abg)"/>
+  <rect width="1280" height="640" fill="url(#agrid)"/>
+
+  <g font-family="system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <text x="48" y="56" font-size="22" font-weight="600" fill="#E2E8F0">它是怎么工作的</text>
+    <text x="48" y="82" font-size="13" fill="#64748B">插件由两个半边组成，中间通过 DSH 自己的 HTTP 路由与 Service 通信；对 NAS 只有一种依赖：官方 trim-cli。</text>
+
+    <!-- ── 第 1 层：DSH Web UI ───────────────────────────── -->
+    <g transform="translate(48,116)">
+      <rect x="0" y="0" width="540" height="176" rx="16" fill="#0F1622" stroke="#1E293B"/>
+      <text x="20" y="30" font-size="14" font-weight="600" fill="#93C5FD">DSH Web UI · 客户端半边</text>
+      <text x="20" y="50" font-size="11.5" fill="#475569" font-family="ui-monospace, 'SF Mono', monospace">lib/client.js</text>
+
+      <g transform="translate(20,66)">
+        <rect x="0" y="0" width="158" height="86" rx="10" fill="#0B1119" stroke="#243247"/>
+        <text x="12" y="22" font-size="12" fill="#E2E8F0">输入框飞牛图标</text>
+        <text x="12" y="42" font-size="10.5" fill="#64748B">/ 唤起选择器</text>
+        <text x="12" y="60" font-size="10.5" fill="#64748B">Ctrl+点击直接引用</text>
+        <circle cx="138" cy="20" r="5" fill="#2DD4BF"/>
+      </g>
+
+      <g transform="translate(190,66)">
+        <rect x="0" y="0" width="158" height="86" rx="10" fill="#0B1119" stroke="#243247"/>
+        <text x="12" y="22" font-size="12" fill="#E2E8F0">文件选择浮层</text>
+        <text x="12" y="42" font-size="10.5" fill="#64748B">毛玻璃 / 弹性动画</text>
+        <text x="12" y="60" font-size="10.5" fill="#64748B">文件夹可下钻</text>
+      </g>
+
+      <g transform="translate(360,66)">
+        <rect x="0" y="0" width="158" height="86" rx="10" fill="#0B1119" stroke="#243247"/>
+        <text x="12" y="22" font-size="12" fill="#E2E8F0">详情页配置</text>
+        <text x="12" y="42" font-size="10.5" fill="#64748B">地址 / 端口 / 协议</text>
+        <text x="12" y="60" font-size="10.5" fill="#64748B">一键授权登录</text>
+      </g>
+    </g>
+
+    <!-- 箭头 UI → Host -->
+    <path d="M588 204 L640 204" stroke="#3B82F6" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="614" y="192" font-size="10" fill="#64748B" text-anchor="middle" font-family="ui-monospace, monospace">fetch</text>
+
+    <!-- ── 第 2 层：DSH Host ─────────────────────────────── -->
+    <g transform="translate(648,116)">
+      <rect x="0" y="0" width="584" height="176" rx="16" fill="#0F1622" stroke="#1E293B"/>
+      <text x="20" y="30" font-size="14" font-weight="600" fill="#A5B4FC">DSH Host · 宿主半边</text>
+      <text x="20" y="50" font-size="11.5" fill="#475569" font-family="ui-monospace, 'SF Mono', monospace">lib/impl.js · lib/auth.js</text>
+
+      <g transform="translate(20,66)">
+        <rect x="0" y="0" width="172" height="86" rx="10" fill="#0B1119" stroke="#243247"/>
+        <text x="12" y="22" font-size="12" fill="#E2E8F0">HTTP 路由</text>
+        <text x="12" y="42" font-size="10" fill="#64748B" font-family="ui-monospace, monospace">/fnos/auth/*</text>
+        <text x="12" y="58" font-size="10" fill="#64748B" font-family="ui-monospace, monospace">/fnos/files</text>
+        <text x="12" y="74" font-size="10" fill="#64748B" font-family="ui-monospace, monospace">/fnos/probe</text>
+      </g>
+
+      <g transform="translate(204,66)">
+        <rect x="0" y="0" width="172" height="86" rx="10" fill="#0B1119" stroke="#243247"/>
+        <text x="12" y="22" font-size="12" fill="#E2E8F0">授权状态机</text>
+        <text x="12" y="42" font-size="10.5" fill="#64748B">OAuth 设备码流程</text>
+        <text x="12" y="60" font-size="10.5" fill="#64748B">结论只认 system info</text>
+      </g>
+
+      <g transform="translate(388,66)">
+        <rect x="0" y="0" width="176" height="86" rx="10" fill="#0B1119" stroke="#243247"/>
+        <text x="12" y="22" font-size="12" fill="#E2E8F0">目录缓存</text>
+        <text x="12" y="42" font-size="10.5" fill="#64748B">内存 + 落盘快照</text>
+        <text x="12" y="60" font-size="10.5" fill="#64748B">stale-while-revalidate</text>
+      </g>
+    </g>
+
+    <!-- 箭头 Host → trim-cli -->
+    <path d="M940 300 L940 348" stroke="#3B82F6" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="952" y="328" font-size="10" fill="#64748B" font-family="ui-monospace, monospace">spawnTerminal</text>
+
+    <!-- ── 第 3 层：trim-cli ─────────────────────────────── -->
+    <g transform="translate(648,356)">
+      <rect x="0" y="0" width="584" height="104" rx="16" fill="#0F1622" stroke="#1E293B"/>
+      <text x="20" y="28" font-size="14" font-weight="600" fill="#FCD34D">fnOS 官方 trim-cli</text>
+      <text x="20" y="48" font-size="11.5" fill="#475569">三级查找，找不到时给出可操作报错</text>
+
+      <g transform="translate(20,62)" font-family="ui-monospace, 'SF Mono', monospace">
+        <rect x="0" y="0" width="150" height="26" rx="7" fill="#1E293B" stroke="#334155"/>
+        <text x="12" y="17" font-size="10.5" fill="#FDE68A">FNO_TRIM_CLI</text>
+        <text x="162" y="17" font-size="11" fill="#475569">→</text>
+
+        <rect x="182" y="0" width="120" height="26" rx="7" fill="#1E293B" stroke="#334155"/>
+        <text x="194" y="17" font-size="10.5" fill="#FDE68A">包内 bin/</text>
+        <text x="314" y="17" font-size="11" fill="#475569">→</text>
+
+        <rect x="334" y="0" width="110" height="26" rx="7" fill="#1E293B" stroke="#334155"/>
+        <text x="346" y="17" font-size="10.5" fill="#FDE68A">PATH</text>
+      </g>
+    </g>
+
+    <!-- 箭头 trim-cli → NAS -->
+    <path d="M1242 408 L1252 408" stroke="#2DD4BF" stroke-width="2"/>
+    <path d="M940 464 L940 500" stroke="#2DD4BF" stroke-width="2" marker-end="url(#arrowTeal)"/>
+    <text x="952" y="488" font-size="10" fill="#5EEAD4" font-family="ui-monospace, monospace">HTTPS :5667</text>
+
+    <!-- ── 第 4 层：fnOS ─────────────────────────────────── -->
+    <g transform="translate(648,508)">
+      <rect x="0" y="0" width="584" height="96" rx="16" fill="#0E1B1A" stroke="#1F6F63"/>
+      <text x="20" y="28" font-size="14" font-weight="600" fill="#5EEAD4">飞牛 fnOS 设备</text>
+      <text x="20" y="48" font-size="11.5" fill="#3F8A7E">自签证书自动容忍 · 中国大陆版 / 海外版 FygoOS 均可连接</text>
+      <g transform="translate(20,60)" font-family="ui-monospace, monospace">
+        <text x="0" y="20" font-size="10.5" fill="#2DD4BF">文件</text>
+        <text x="48" y="20" font-size="10.5" fill="#2DD4BF">存储池</text>
+        <text x="112" y="20" font-size="10.5" fill="#2DD4BF">Docker</text>
+        <text x="176" y="20" font-size="10.5" fill="#2DD4BF">下载</text>
+        <text x="224" y="20" font-size="10.5" fill="#2DD4BF">相册</text>
+        <text x="272" y="20" font-size="10.5" fill="#2DD4BF">监控</text>
+      </g>
+    </g>
+
+    <!-- ── 侧栏：Skill 注册 ──────────────────────────────── -->
+    <g transform="translate(48,320)">
+      <rect x="0" y="0" width="540" height="152" rx="16" fill="#0F1622" stroke="#1E293B"/>
+      <text x="20" y="30" font-size="14" font-weight="600" fill="#C4B5FD">DSH Skill 服务</text>
+      <text x="20" y="50" font-size="11.5" fill="#475569">技能随插件注册，Agent 立刻知道怎么用 fnOS</text>
+
+      <g transform="translate(20,66)">
+        <rect x="0" y="0" width="500" height="30" rx="8" fill="#0B1119" stroke="#243247"/>
+        <text x="12" y="19" font-size="10.5" fill="#64748B" font-family="ui-monospace, monospace">skills.register({</text>
+        <text x="150" y="19" font-size="10.5" fill="#A78BFA" font-family="ui-monospace, monospace">name: 'fnos'</text>
+        <text x="248" y="19" font-size="10.5" fill="#64748B" font-family="ui-monospace, monospace">, resourceBase: PACKAGE_ROOT })</text>
+      </g>
+      <g transform="translate(20,104)">
+        <rect x="0" y="0" width="500" height="30" rx="8" fill="#0B1119" stroke="#243247"/>
+        <text x="12" y="19" font-size="10.5" fill="#64748B">→ SKILL.md · entries/ · reference/ 全部可被 Agent 按需读取</text>
+      </g>
+    </g>
+
+    <!-- 箭头 Skill → Host -->
+    <path d="M588 396 L640 396" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="614" y="384" font-size="9.5" fill="#8B5CF6" text-anchor="middle">Service</text>
+
+    <!-- 侧栏：性能 ─────────────────────────────────────── -->
+    <g transform="translate(48,492)">
+      <rect x="0" y="0" width="540" height="112" rx="16" fill="#0F1622" stroke="#1E293B"/>
+      <text x="20" y="30" font-size="14" font-weight="600" fill="#7DD3FC">读取性能</text>
+      <g transform="translate(20,46)" font-family="system-ui, 'PingFang SC', sans-serif">
+        <text x="0" y="14" font-size="11.5" fill="#94A3B8">冷启动实时拉取</text>
+        <rect x="150" y="2" width="290" height="14" rx="7" fill="#1E293B"/>
+        <rect x="150" y="2" width="290" height="14" rx="7" fill="#F87171" fill-opacity="0.55"/>
+        <text x="456" y="14" font-size="11" fill="#FCA5A5" font-family="ui-monospace, monospace">3366 ms</text>
+
+        <text x="0" y="42" font-size="11.5" fill="#94A3B8">缓存命中</text>
+        <rect x="150" y="30" width="290" height="14" rx="7" fill="#1E293B"/>
+        <rect x="150" y="30" width="9" height="14" rx="7" fill="#2DD4BF"/>
+        <text x="456" y="42" font-size="11" fill="#5EEAD4" font-family="ui-monospace, monospace">3–81 ms</text>
+      </g>
+    </g>
+  </g>
+</svg>

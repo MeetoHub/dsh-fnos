@@ -1,239 +1,221 @@
+<div align="center">
+  <img src="docs/images/hero.svg" alt="dsh-fnos — 飞牛 fnOS 的 DeepSeek Harness 插件" width="100%" />
+</div>
+
+<div align="center">
+
 # dsh-fnos
 
-[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）插件：在本机通过 DSH 远程管理 **飞牛 fnOS** 设备。
+**在对话里直接遥控你的飞牛 NAS**
 
-授权登录、文档目录树浏览、文件/文件夹 `@引用` 插入，全部在 DSH 界面里完成，不需要终端。
+授权、翻目录、把 NAS 上的文件 `@` 进对话 —— 全程不打开终端。
+
+[![Release](https://img.shields.io/github/v/release/MeetoHub/dsh-fnos?color=3B82F6&label=release)](https://github.com/MeetoHub/dsh-fnos/releases)
+[![License](https://img.shields.io/github/license/MeetoHub/dsh-fnos?color=2DD4BF)](LICENSE)
+[![DSH](https://img.shields.io/badge/DSH-%E2%89%A5%200.2.0--rc.2-6366F1)](https://github.com/deepseek-ai/deepseek-harness)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-64748B)](#安装)
+[![Stars](https://img.shields.io/github/stars/MeetoHub/dsh-fnos?color=FBBF24)](https://github.com/MeetoHub/dsh-fnos/stargazers)
+
+</div>
+
+---
+
+## 为什么需要它
+
+飞牛 fnOS 提供了官方 CLI（`trim-cli`），能力很全 —— 但它是个**终端工具**。想在 AI 对话里让 Agent 帮你操作 NAS，你得反复：
+
+```bash
+trim-cli login                 # 打开浏览器、粘一次性授权码
+trim-cli file ls /vol1/1000    # 一层层翻目录找路径
+# 然后手动把路径复制进对话
+```
+
+`dsh-fnos` 把这三步搬进 DSH 界面：
+
+- **授权**变成插件详情页里的一个按钮
+- **翻目录**变成输入框旁边的浮层，点两下就到
+- **引用文件**变成 `Ctrl + 点击`，路径自动变成 `@文件名`
+
+对 Agent 来说，它还同时注册了 fnOS 技能，Agent 知道该调哪些命令、参数怎么填。
+
+---
+
+## 界面预览
+
+<div align="center">
+  <img src="docs/images/hero.svg" alt="输入框旁的飞牛图标与文件选择浮层" width="100%" />
+</div>
+
+**① 输入框旁的飞牛图标** — 点开即目录树，`Ctrl + 点击` 直接以 `@文件` 引用插入输入框，不用先打 `/`
+**② 毛玻璃浮层** — 弹性动画 + 跟随 DSH 主题（含第三方皮肤）
+**③ 插件详情页** — 地址 / 端口 / 协议写在插件自己的页面里，不污染全局设置
+
+> 真实界面截图见 **[docs/images/](docs/images/)**（用 `scripts/tools/capture-window.ps1` 从 DSH 窗口直接抓取）
 
 ---
 
 ## 功能
 
-| 功能 | 说明 |
-|---|---|
-| **授权登录** | 走 `trim-cli login` 的 OAuth 设备码流程，在插件详情页里点一下打开浏览器，粘回一次性授权码即可 |
-| **文件/文件夹选择器** | 输入框左侧的飞牛图标，点开是 NAS 目录树；`Ctrl/Cmd + 点击` 直接以 `@文件名` 引用插入输入框 |
-| **目录树缓存** | 内存直读 + 落盘，打开走 `peek()` 恒为毫秒级；后台刷新**默认关闭**（`FNO_BACKGROUND_REFRESH=1` 可开） |
-| **主题跟随** | 全部使用 `--dsw-alias-*` 主题变量 + 毛玻璃，能跟随 DSH 皮肤（含第三方主题） |
-| **插件详情页配置** | 主机 / 端口 / 协议 / 跳过证书校验，写在插件自己的详情页里 |
+| | 能力 | 说明 |
+|---|---|---|
+| 🔐 | **授权登录** | 走 `trim-cli` 的 OAuth 设备码流程，插件页里点一下 → 打开浏览器 → 粘回授权码。结论只认 `system info`，不会被"静默退出"骗过 |
+| 📂 | **文件 / 文件夹选择器** | 目录树浮层，文件夹可下钻、文件可选中，`Ctrl/Cmd + 点击` 直接插入引用 |
+| ⚡ | **目录缓存** | 内存直读 + 落盘快照，打开恒为毫秒级；冷启动实测 **3366 ms → 3–81 ms** |
+| 🎨 | **主题跟随** | 全部用 `--dsw-alias-*` 变量 + 毛玻璃，跟随 DSH 皮肤，深色/浅色都不破相 |
+| 🧠 | **技能自动注册** | 插件激活即向 DSH 注册 `fnos` 技能，Agent 立刻知道怎么用 NAS |
+| 🩺 | **自检探针** | `GET /fnos/probe` 返回服务可用性、CLI 路径、缓存规模，排障不用猜 |
 
 ---
 
 ## 安装
 
-### 最快：把仓库地址粘给插件管理器
+三种方式，都不需要 clone、不需要构建 —— `lib/` 已是可直接运行的代码。
+
+### 最快（推荐）
+
+在 DSH 里把 Release 的 tgz 地址交给插件管理器：
+
+```
+plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos.tgz
+```
+
+### 粘仓库地址
 
 ```
 plugin_manager  install_bundle  target = github:MeetoHub/dsh-fnos
 ```
 
-也可以用 Release 里的 tgz（版本固定，不拉整个仓库）：
+> 会完整拉取仓库（含 `bin/` 二进制），比上一个慢。要固定版本加 `#v0.1.2`。
 
-```
-https://github.com/MeetoHub/dsh-fnos/releases/download/v0.1.0/dsh-fnos-0.1.0.tgz
-```
-
-装完**重启一次 DSH**，然后在插件详情页填设备地址即可。
-
-三种安装方式的完整说明、前置条件、卸载与排错见 **[docs/INSTALL.md](docs/INSTALL.md)**。
-
-### 从源码安装（开发）
+### 源码开发态
 
 ```bash
-# 在 DSH profile 目录下
+cd "$DSH_PROFILE_DIR"
 pnpm add link:/path/to/dsh-fnos
 ```
 
-或在 DSH 的插件管理器里安装 `link:/path/to/dsh-fnos`。改代码即时生效，无需重装。
+改代码即时生效（宿主侧在插件管理器里关/开一次，客户端侧刷新页面）。
 
-启用后需要**重启一次 DSH**（宿主半边是 Node 模块，启动时装载）。
+**装完需重启一次 DSH**（宿主半边是 Node 模块，启动时装载）。
 
-### 语言包
-
-`locale/zh.json`、`locale/en.json` 提供插件显示名与描述。
+完整步骤、前置条件、卸载与排错见 **[docs/INSTALL.md](docs/INSTALL.md)**。
 
 ---
 
-## 使用
+## 它怎么工作
 
-1. **设置 → 插件 → 飞牛 NAS → 点进详情页**
-2. 填 **主机 / 端口 / 协议**（自签证书记得勾「跳过证书校验」）
-3. 点 **登录飞牛 NAS** → 浏览器打开授权页 → 登录后把页面上的**一次性授权码**粘回来 → 点「完成登录」
-4. 连接成功后，**输入框左侧**会出现飞牛图标（绿点 = 已连接）
-5. 点图标打开目录树：
-   - 点文件夹名 → 进入下一级
-   - **`Ctrl / Cmd + 点击`** → 直接以 `@文件夹/` 引用插入
-   - 点文件名 → 直接以 `@文件名` 引用插入
-   - 顶部搜索框可按名字过滤当前目录
+<div align="center">
+  <img src="docs/images/architecture.svg" alt="dsh-fnos 架构" width="100%" />
+</div>
 
----
+插件由**两个半边**组成：
 
-## 架构
-
-插件由两个半边组成，通过 DSH 的 Cordis 插件系统装配。
-
-### 宿主半边（`lib/entry.js` → `lib/impl.js`）
-
-- `lib/entry.js`：稳定 shim。每次 `apply()` 用带时间戳的 URL 动态 `import('./impl.js?t=…')`，用来**击穿 Node 的 ESM 模块缓存** —— 改完代码在插件管理器里关一次再开就生效，不必重启 DSH。
-- `lib/impl.js`：注册 HTTP 路由、`fnos_probe` 工具、目录缓存与后台刷新。
-- `lib/auth.js`：授权状态机（`start` / `submit` / `cancel` / `verify` / `reconcile`）。
-
-### 客户端半边（`lib/client.js`）
-
-通过 `window.__ModuleLoader__.load({ id, factory })` 注册，占三个槽位：
-
-| 槽位 | 用途 | key |
+| 半边 | 文件 | 职责 |
 |---|---|---|
-| `plugins.bundle.config` | 插件详情页里的配置 + 授权（主入口） | `dsh-fnos`（npm 包名） |
-| `conversation.input.left` | 输入框左侧图标 + 目录树浮层 | — |
-| `main` | 完整面板 | `dsh-fnos` |
+| 客户端 | `lib/client.js` | 输入框图标、文件选择浮层、插件详情页配置。跑在 Web UI |
+| 宿主 | `lib/impl.js` · `lib/auth.js` | HTTP 路由、授权状态机、目录缓存。跑在 DSH 主进程 |
 
-### HTTP 路由
+两者只通过 **DSH 自己的 HTTP 路由**通信（`/fnos/auth/*`、`/fnos/files`、`/fnos/probe`），
+不使用任何私有 IPC —— 所以插件升级不会因为 DSH 内部变动而失效。
 
-> ⚠️ 刻意**不**挂在 `/plugins/<id>/` 下 —— 声明 `dsh.client` 之后 `clientModules` 会占用该命名空间分发前端产物，子路径会被截走（表现为空 404 / 405）。
+对 NAS 只有一种依赖：**官方 `trim-cli`**，按三级顺序查找：
 
-| 路由 | 说明 |
-|---|---|
-| `GET /fnos/probe` | 插件装载状态与宿主服务可用性 |
-| `GET /fnos/auth/status` | 授权状态（无活跃会话时会主动查真实凭据） |
-| `POST /fnos/auth/start` | 启动登录，返回授权 URL |
-| `POST /fnos/auth/submit` | 提交一次性授权码 |
-| `POST /fnos/auth/cancel` | 取消 |
-| `GET /fnos/files?path=` | 列目录（带缓存，`?fresh=1` 强制刷新） |
+```
+FNO_TRIM_CLI 环境变量  →  包内 bin/  →  系统 PATH
+```
+
+三级都没有时报一条可操作的中文错误，而不是拿不存在的路径去 spawn。
 
 ---
 
-## 目录缓存设计
+## 性能
 
-```
-读：内存 Map（毫秒级），过期也先返回旧值并标 stale
-写：按需刷新（打开目录时）+ 整表覆盖落盘 .cache/dirtree.json
-后台：默认关闭。设 FNO_BACKGROUND_REFRESH=1 才启用自调度刷新（20s、每轮 1 条、不重叠）
-上限：400 条，超出按最久未更新淘汰
-```
-
-为什么不直接每次实时拉：`trim-cli` 每次调用都要分配真终端（`spawnTerminal`），单次 1–3 秒。缓存后打开文件树的实测对比：
+目录读取走内存 + 落盘快照，**打开永远不阻塞**：
 
 | 场景 | 耗时 |
 |---|---|
-| 冷启动（实时调 NAS） | 3366 ms |
-| 缓存命中 | 3–81 ms |
-| DSH 重启后（从磁盘恢复） | 9–67 ms |
+| 冷启动（实时调 NAS） | **3366 ms** |
+| 缓存命中 | **3 – 81 ms** |
+| DSH 重启后（从磁盘恢复） | **9 – 67 ms** |
 
-为什么不默认开后台刷新：`spawnTerminal` **每次调用在本平台会残留约 11 个句柄**，
-调用越频繁涨得越快。而打开文件树靠 `peek()` 走内存、从不阻塞，后台刷新只买到
-"数据更新鲜"这一点，不值得用句柄泄漏去换。详见踩坑记录第 9 条。
+后台刷新默认**关闭**：`spawnTerminal` 每次调用在本平台会残留约 11 个句柄，
+而打开目录树本来就靠 `peek()` 走内存。需要更新鲜的数据时带 `?fresh=1` 强制刷新，
+或设 `FNO_BACKGROUND_REFRESH=1` 打开自调度刷新（20 秒 / 每轮 1 条 / 不重叠）。
 
----
-
-## 开发踩坑记录
-
-这些都是实际调试中撞出来的，改代码前建议先读一遍。
-
-1. **Loader 行的 `name` 必须等于包名**。`dsh-client-modules` 只把浏览器半边挂在「说明符恰为包名」的那一行上，用别名会导致**宿主正常、界面静默消失**。
-2. **`id` 不能与官方 `@tnnevol/dsh-fnos` 冲突**，否则你的行根本不会创建（表现为所有路由 404）。
-3. **`ctx.setInterval` 不可用** —— `timer` 不在插件 `inject` 里，会抛 `cannot get property "timer" without inject`。用全局 `setInterval` + `ctx.effect` 清理。
-4. **普通 `spawn` 拿不到 `trim-cli` 的 stdout**（Windows 实测为空），必须用 `ctx.subprocess.spawnTerminal` 分配真终端。
-5. **`insertReference` 支持零宽 span**，不需要先打 `/` 做锚点。官方自己的 `insertFileReferences` 就是 `{ start: at, end: at }`。
-6. **组件不能直接引用 `apply` 的 `ctx`** —— 组件在模块作用域，要通过 `register({ inject: (sessionId) => ({ ctx, sessionId }) })` 传进去。
-7. **`handle.done` 不能用来判断登录成败**。`trim-cli` 授权成功后**不打印成功文案**、直接静默退出（exit=0），唯一可信的是 `system info` 能否取到设备数据。
-8. **PTY 会把授权 URL 按终端宽度折行**。匹配前必须先去换行（`\r\n|\r|\n`），否则只能拿到第一段（约 140 字符），导致授权页报「参数异常」。
-9. **`spawnTerminal` 的代价被严重低估 —— 这是本项目最严重的一次事故。**
-   两个独立问题叠加，实测主进程涨到 **5900+ 句柄 / 377 线程 / 2.6 GB** 并反复崩溃：
-
-   **(a) 调度重叠（放大器）**：`setInterval` 驱动 async tick，无法 await。单轮刷 10 条
-   × 单次 1–3 秒 = 10–30 秒，超过 20 秒间隔后轮次重叠，每轮新增 10 个 PTY 且旧的未回收。
-   修法：**自调度**（上一轮结束才排下一轮）+ 每轮只做 1 条。
-   实测：句柄增速 +329/60s → +38/60s。
-
-   **(b) 每次调用固定残留约 11 句柄（真凶）**：即使串行调用、`terminate()` 已 await、
-   监听已解除、`done` 已落定，单次 `spawnTerminal` 仍会留下句柄和线程。
-   所以只要还在频繁 spawn，泄漏就还在 —— 只修调度只能减缓约 9 倍。
-   修法：**减少 spawn 本身**。后台刷新改为默认关闭（`FNO_BACKGROUND_REFRESH=1` 才开），
-   预热跳过已缓存目录（装载时的 44 次 spawn 降到 0，耗时 156s → 3.5s）。
-   实测：150 秒净增 **+13 句柄 / −2 线程 / −97 MB**（噪音级，GC 正常回收）。
-
-   附带教训：`Promise.race` + 裸 `setTimeout` 会留下悬挂定时器（闭包还拖住终端句柄），
-   要换成可清除的 `settlesWithin()`；`terminate()` 之后还要解监听、等 `done` 落定。
-10. **后台刷新要先判授权**。未授权时每轮都会 spawn 一个注定失败的终端，纯浪费；
-    授权结果记忆 60 秒即可，不必每轮校验。
+> 这一条来自一次真实事故 —— 详见 [docs/PITFALLS.md](docs/PITFALLS.md) 第 9 条。
 
 ---
 
-## 已知限制
+## 安全与隐私
 
-- **海外版 FygoOS 固件**：授权页点「授权」后返回「参数异常」。原因是该固件的 OAuth 授权端点不识别 `trim-cli` 的 `client_id`，属设备侧问题，插件无法绕过。国内版 fnOS 无此问题。
-- **部分命令走另一套地址**：`file usage` 等会连服务端下发的 `xxx:15667`，与配置的 `:5667` 不一致时会报错。`file ls` 系列不受影响。
-- 目前只实现了**只读**能力（浏览/选取）。写操作（上传/删除/移动）尚未暴露为工具。
-
----
-
-## 目录结构
-
-```
-dsh-fnos/
-├── lib/
-│   ├── entry.js          # 宿主入口 shim（ESM 缓存击穿）
-│   ├── impl.js           # 宿主主逻辑：路由 / 工具 / 缓存
-│   ├── auth.js           # 授权状态机
-│   └── client.js         # 客户端半边（UI）
-├── bin/                  # 各平台预编译 trim-cli
-├── locale/               # zh / en 语言包
-├── entries/              # 技能条目文档
-├── reference/            # trim-cli 命令参考
-├── scripts/              # 技能脚本
-├── cordis.patch.yml      # 插件装载补丁
-├── SKILL.md              # 技能描述
-├── manifest.json
-└── icon.png
-```
+- **凭据不出本机**：授权状态由 `trim-cli` 自己管理，插件不落盘任何 token
+- **不做外发**：除你的 NAS 地址外，插件不向任何第三方发起请求
+- **自签证书**：默认容忍设备的自签证书（`tlsInsecure`），仅影响该 NAS 的 TLS 校验
+- **可审计**：全部逻辑在 `lib/`（约 1.6k 行），无混淆、无压缩产物
 
 ---
 
-## 关于 `bin/` 里的二进制
+## 常见问题
 
-`bin/` 下是 fnOS 官方的 `trim-cli` 预编译产物（六个平台各一份，共约 41 MB），随插件一同分发以便开箱可用。**它是本插件的硬依赖** —— 插件的全部能力都建立在调用 `trim-cli` 之上，没有它就无法列目录、无法授权。
+<details>
+<summary><b>装完看不到图标？</b></summary>
 
-**这些不是本项目的产物**，版权归飞牛 fnOS 所有，使用须遵守飞牛的相关条款与许可。本项目的 MIT 许可只覆盖自己编写的代码，即 `lib/`、`cordis.patch.yml`、`locale/`、`entries/`、`reference/`、`scripts/`、`README.md` 等文件。
+首次安装新包必须**重启 DSH**，仅刷新页面不够（宿主半边在启动时装载）。
+</details>
 
-### `trim-cli` 的查找顺序（三级回退）
+<details>
+<summary><b>授权一直失败 / 授权页报「参数异常」？</b></summary>
 
-`lib/impl.js` 的 `cliPath()` 按以下顺序解析，前面的优先：
+海外版 **FygoOS** 固件的 OAuth 端点不识别 `trim-cli` 的 `client_id`，属设备侧限制，插件无法绕过。国内版 fnOS 正常。
+</details>
 
-| 顺序 | 来源 | 用法 |
-|---|---|---|
-| ① | 环境变量 `FNO_TRIM_CLI` | 显式指定绝对路径，最高优先级 |
-| ② | 本包 `bin/` | 随包分发的版本，开箱可用 |
-| ③ | 系统 `PATH` 里的 `trim-cli` | 自己装过 trim-cli 时复用 |
+<details>
+<summary><b>提示找不到 trim-cli？</b></summary>
 
-三级都找不到 → 报一条明确的可操作错误，而不是拿不存在的路径去 spawn。
+按提示任选一种：放进插件 `bin/` 目录、加入系统 `PATH`、或用 `FNO_TRIM_CLI` 指定绝对路径。
+</details>
 
-所以要**去掉随包二进制**（例如担心再分发厂商产物的许可问题、或想减小安装体积）：
+<details>
+<summary><b>从 GitHub 地址安装时报 <code>NPM_EPERM</code>？</b></summary>
 
-```bash
-rm -rf bin/            # 删掉整个目录
-# 然后确保 trim-cli 在 PATH 里，或用 FNO_TRIM_CLI 指向它
-```
-
-功能不受影响，只是少了一层"开箱即用"。
-
-> 体积现状：`bin/` 占整个工作树的 **98%**（41.2 MB / 42.0 MB），
-> npm 包 18 MB 里有 17 MB 是它。每个用户下载时会把六个平台全下下来，
-> 但实际只会用到自己平台的那一个。
+说明该插件已经以**本地软链**形式装着，同一个包名不能两种装法并存。
+先 `remove_bundle`，再装，或继续用软链（开发态更适合）。
+</details>
 
 ---
 
-## 开发
+## 参与开发
 
-开发循环、分支与版本约定、发布流程，以及三道安全防线（本地 hook / CI / 发布复检）见 **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**。
+| 文档 | 内容 |
+|---|---|
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | 开发循环、分支与版本约定、发版流程、三道安全防线 |
+| [docs/PITFALLS.md](docs/PITFALLS.md) | 10 条踩坑记录（含一起内存泄漏事故的完整复盘） |
+| [docs/INSTALL.md](docs/INSTALL.md) | 三种安装方式的完整说明与排错 |
 
-新克隆仓库后请先启用本地敏感内容扫描：
+新克隆仓库后请先启用敏感内容扫描（防把内网地址带进公开历史）：
 
 ```bash
 git config core.hooksPath scripts/hooks
 ```
 
+发版只要三步：
+
+```bash
+npm version patch --no-git-tag-version
+git commit -am "chore: release vX.Y.Z" && git push
+git tag vX.Y.Z && git push origin vX.Y.Z     # CI 自动建 Release 并附 tgz
+```
+
 ---
 
-## License
+## 许可
 
-MIT —— 仅覆盖本项目自有代码；`bin/` 下的二进制见上一节。
+自有代码 **MIT**，见 [LICENSE](LICENSE)。
+
+`bin/` 下是**飞牛官方 `trim-cli` 预编译产物**（六个平台，约 41 MB），版权归飞牛 fnOS 所有，
+仅随本插件分发作运行依赖 —— 不构成对本项目的授权。详见 [NOTICE](NOTICE)。
+
+<div align="center">
+<br>
+<sub>如果这个插件帮你省了时间，点个 ⭐ 是最好的支持</sub>
+</div>

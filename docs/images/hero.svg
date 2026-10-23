@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" fill="none" role="img" aria-label="dsh-fnos — 飞牛 fnOS 的 DSH 插件">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A0D14"/>
+      <stop offset="0.55" stop-color="#0E1420"/>
+      <stop offset="1" stop-color="#0B1018"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0.18" cy="0.22" r="0.55">
+      <stop offset="0" stop-color="#3B82F6" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#3B82F6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0.86" cy="0.75" r="0.5">
+      <stop offset="0" stop-color="#14B8A6" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#14B8A6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="title" x1="72" y1="150" x2="360" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#9CC2FF"/>
+    </linearGradient>
+    <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#60A5FA" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#2DD4BF" stop-opacity="0.45"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" stroke="#FFFFFF" stroke-opacity="0.035" stroke-width="1"/>
+    </pattern>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="420" fill="url(#bg)"/>
+  <rect width="1280" height="420" fill="url(#grid)"/>
+  <rect width="1280" height="420" fill="url(#glowA)"/>
+  <rect width="1280" height="420" fill="url(#glowB)"/>
+
+  <!-- 左侧文案 -->
+  <g font-family="system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <g transform="translate(72,96)">
+      <rect x="0" y="0" width="188" height="30" rx="15" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+      <circle cx="17" cy="15" r="4.5" fill="#2DD4BF"/>
+      <text x="32" y="20" font-size="13" fill="#A7F3D0" letter-spacing="0.4">DeepSeek Harness 插件</text>
+    </g>
+
+    <text x="70" y="196" font-size="66" font-weight="700" fill="url(#title)" letter-spacing="-1.5">dsh-fnos</text>
+
+    <text x="72" y="240" font-size="19" fill="#CBD5E1">在对话里直接遥控你的飞牛 NAS</text>
+
+    <text x="72" y="270" font-size="15" fill="#7C8AA0">授权 · 目录浏览 · @引用文件 · 全部在 DSH 界面内完成，不碰终端</text>
+
+    <g transform="translate(72,300)" font-family="system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+      <rect x="0" y="0" width="112" height="28" rx="14" fill="#1E293B" stroke="#334155"/>
+      <text x="56" y="19" font-size="12.5" fill="#93C5FD" text-anchor="middle">OAuth 设备码</text>
+
+      <rect x="122" y="0" width="124" height="28" rx="14" fill="#1E293B" stroke="#334155"/>
+      <text x="184" y="19" font-size="12.5" fill="#93C5FD" text-anchor="middle">目录树毫秒级</text>
+
+      <rect x="256" y="0" width="104" height="28" rx="14" fill="#1E293B" stroke="#334155"/>
+      <text x="308" y="19" font-size="12.5" fill="#93C5FD" text-anchor="middle">主题跟随</text>
+    </g>
+  </g>
+
+  <!-- 右侧示意图：输入框 + 文件浮层 -->
+  <g transform="translate(700,72)">
+    <!-- 主面板 -->
+    <rect x="0" y="0" width="500" height="276" rx="20" fill="#0F1622" stroke="#1E293B"/>
+    <rect x="0" y="0" width="500" height="276" rx="20" fill="url(#glowB)" opacity="0.25"/>
+
+    <!-- 标题栏 -->
+    <circle cx="24" cy="24" r="4" fill="#334155"/>
+    <circle cx="40" cy="24" r="4" fill="#334155"/>
+    <circle cx="56" cy="24" r="4" fill="#334155"/>
+    <text x="80" y="29" font-size="12" fill="#475569" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">新会话</text>
+
+    <!-- 输入区 -->
+    <rect x="20" y="52" width="460" height="76" rx="14" fill="#0B1119" stroke="#243247"/>
+    <text x="40" y="80" font-size="13.5" fill="#64748B" font-family="system-ui, -apple-system, 'Segoe UI', 'PingFang SC', sans-serif">把 NAS 上的设计稿引进来…</text>
+
+    <!-- 已插入的引用 chip -->
+    <g transform="translate(40,92)">
+      <rect x="0" y="0" width="168" height="24" rx="12" fill="#132A2A" stroke="#1F6F63"/>
+      <circle cx="14" cy="12" r="4" fill="#2DD4BF"/>
+      <text x="26" y="16.5" font-size="11.5" fill="#99F6E4" font-family="ui-monospace, 'SF Mono', monospace">@封面-终稿.psd</text>
+    </g>
+
+    <!-- 输入框左下角的飞牛图标（可点击） -->
+    <circle cx="44" cy="110" r="12" fill="#0E1B2B" stroke="#2B4A6F"/>
+    <g transform="translate(38,104)">
+      <rect x="0" y="7" width="12" height="3.6" rx="1.3" fill="#60A5FA"/>
+      <rect x="0" y="2.4" width="12" height="3.6" rx="1.3" fill="#60A5FA" opacity="0.85"/>
+      <rect x="0" y="0" width="12" height="1.8" rx="0.9" fill="#93C5FD"/>
+    </g>
+
+    <!-- 文件浮层 -->
+    <g transform="translate(20,140)">
+      <rect x="0" y="0" width="300" height="118" rx="16" fill="#111A26" stroke="#2A3A52"/>
+      <text x="18" y="26" font-size="11.5" fill="#64748B" font-family="ui-monospace, monospace">/vol1/1000/设计素材</text>
+
+      <!-- 文件夹行 -->
+      <g transform="translate(14,40)">
+        <rect x="0" y="0" width="272" height="30" rx="8" fill="#FFFFFF" fill-opacity="0.04"/>
+        <path d="M8 10h6l2 2h8v9H8z" fill="#FBBF24" opacity="0.9"/>
+        <text x="34" y="19" font-size="12.5" fill="#E2E8F0" font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif">2026 品牌视觉</text>
+        <text x="252" y="19" font-size="13" fill="#475569" text-anchor="middle">›</text>
+      </g>
+
+      <!-- 文件行 -->
+      <g transform="translate(14,74)">
+        <rect x="0" y="0" width="272" height="30" rx="8" fill="#2DD4BF" fill-opacity="0.10" stroke="#2DD4BF" stroke-opacity="0.35"/>
+        <path d="M8 9h7l3 3v9H8z" fill="#93C5FD"/>
+        <text x="34" y="19" font-size="12.5" fill="#E2E8F0" font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif">封面-终稿.psd</text>
+        <text x="252" y="19" font-size="10.5" fill="#5EEAD4" text-anchor="middle">@</text>
+      </g>
+
+      <text x="18" y="112" font-size="10.5" fill="#475569" font-family="system-ui, sans-serif">Ctrl + 点击 = 直接插入引用</text>
+    </g>
+  </g>
+
+  <!-- 连接线：DSH ⇄ NAS -->
+  <g opacity="0.55">
+    <path d="M664 210 C 686 210, 686 210, 700 210" stroke="url(#stroke)" stroke-width="2" stroke-dasharray="5 5"/>
+  </g>
+
+  <text x="640" y="392" font-size="11" fill="#3B4A5F" text-anchor="end" font-family="ui-monospace, monospace">DSH Web UI</text>
+  <text x="1210" y="392" font-size="11" fill="#3B4A5F" text-anchor="end" font-family="ui-monospace, monospace">fnOS NAS</text>
+</svg>
