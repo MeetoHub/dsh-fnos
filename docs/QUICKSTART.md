@@ -30,6 +30,28 @@ plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/re
 
 ---
 
+## ⚠️ 最容易犯的错：粘错地址
+
+**下面这个地址装不上**（它是仓库网页，不是安装包）：
+
+```
+❌ https://github.com/MeetoHub/dsh-fnos          ← 浏览器地址栏那个
+❌ https://github.com/MeetoHub/dsh-fnos.git      ← 加了 .git 也不行
+```
+
+**要粘的是 `.tgz` 结尾的下载链接**（见上面第 1 步），或者用仓库简写语法：
+
+```
+✅ https://github.com/MeetoHub/dsh-fnos/releases/latest/download/dsh-fnos-windows-x64.tgz
+✅ github:MeetoHub/dsh-fnos                      ← 注意没有 https://，是 github: 开头
+```
+
+判断方法：**结尾是 `.tgz`，或者开头是 `github:`**。两者都不是，就一定装不上。
+
+如果装的时候只显示「无输出」「安装失败」，九成是地址错。
+
+---
+
 ## 第 2 步：重启 DSH
 
 **完全退出 DSH，再重新打开。**

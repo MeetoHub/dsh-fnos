@@ -114,7 +114,11 @@ plugin_manager  install_bundle  target = https://github.com/MeetoHub/dsh-fnos/re
 plugin_manager  install_bundle  target = github:MeetoHub/dsh-fnos
 ```
 
-> 会完整拉取仓库（含 `bin/` 二进制），比上一个慢。要固定版本加 `#v0.1.2`。
+> 会完整拉取仓库（含 `bin/` 二进制），比上一个慢。要固定版本加 `#v0.4.0`。
+
+> ⚠️ **必须写成 `github:MeetoHub/dsh-fnos`**（`github:` 开头，没有 `https://`）。
+> 直接把浏览器地址栏的 `https://github.com/MeetoHub/dsh-fnos` 粘进去会装不上——
+> 那是一个网页地址，pnpm 拿它 clone 只会拿到 HTML，表现为「安装失败 / 无输出」。
 
 > ### ⚠️ 网络受限时不要用远程 URL 安装
 >
