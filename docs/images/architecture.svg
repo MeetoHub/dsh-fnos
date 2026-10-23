@@ -109,7 +109,6 @@
     </g>
 
     <!-- 箭头 trim-cli → NAS -->
-    <path d="M1242 408 L1252 408" stroke="#2DD4BF" stroke-width="2"/>
     <path d="M940 464 L940 500" stroke="#2DD4BF" stroke-width="2" marker-end="url(#arrowTeal)"/>
     <text x="952" y="488" font-size="10" fill="#5EEAD4" font-family="ui-monospace, monospace">HTTPS :5667</text>
 
@@ -146,9 +145,7 @@
       </g>
     </g>
 
-    <!-- 箭头 Skill → Host -->
-    <path d="M588 396 L640 396" stroke="#8B5CF6" stroke-width="2" marker-end="url(#arrow)"/>
-    <text x="614" y="384" font-size="9.5" fill="#8B5CF6" text-anchor="middle">Service</text>
+    <!-- Skill 卡与 Host 的关系已由卡内文案说明，此处不再画悬空箭头 -->
 
     <!-- 侧栏：性能 ─────────────────────────────────────── -->
     <g transform="translate(48,492)">
