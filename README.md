@@ -20,10 +20,21 @@
 
 ## 安装
 
-### 前置条件
+### 最快：把仓库地址粘给插件管理器
 
-- DSH `>= 0.2.0-rc.2`
-- 一台可访问的 fnOS 设备（含海外版 FygoOS）
+```
+plugin_manager  install_bundle  target = github:MeetoHub/dsh-fnos
+```
+
+也可以用 Release 里的 tgz（版本固定，不拉整个仓库）：
+
+```
+https://github.com/MeetoHub/dsh-fnos/releases/download/v0.1.0/dsh-fnos-0.1.0.tgz
+```
+
+装完**重启一次 DSH**，然后在插件详情页填设备地址即可。
+
+三种安装方式的完整说明、前置条件、卸载与排错见 **[docs/INSTALL.md](docs/INSTALL.md)**。
 
 ### 从源码安装（开发）
 
@@ -32,7 +43,7 @@
 pnpm add link:/path/to/dsh-fnos
 ```
 
-或在 DSH 的插件管理器里安装 `link:/path/to/dsh-fnos`。
+或在 DSH 的插件管理器里安装 `link:/path/to/dsh-fnos`。改代码即时生效，无需重装。
 
 启用后需要**重启一次 DSH**（宿主半边是 Node 模块，启动时装载）。
 

@@ -8,6 +8,11 @@
     "type": "git",
     "url": "git+https://github.com/MeetoHub/dsh-fnos.git"
   },
+  "homepage": "https://github.com/MeetoHub/dsh-fnos#readme",
+  "bugs": {
+    "url": "https://github.com/MeetoHub/dsh-fnos/issues"
+  },
+  "author": "MeetoHub",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -33,6 +38,7 @@
     "entries",
     "reference",
     "scripts",
+    "docs",
     "cordis.patch.yml",
     "SKILL.md",
     "manifest.json"
