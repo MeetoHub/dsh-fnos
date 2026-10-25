@@ -1,7 +1,7 @@
 {
   "name": "dsh-fnos",
   "displayName": "fnos",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "飞牛 fnOS 的 DSH 插件：远程授权登录、文件/文件夹 @引用选择器、目录树后台缓存",
   "documentation": "https://github.com/MeetoHub/dsh-fnos",
   "repository": {
