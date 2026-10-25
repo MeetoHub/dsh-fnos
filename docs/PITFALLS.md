@@ -102,3 +102,26 @@ ctx.slots.register({ inject: (sessionId) => ({ ctx, sessionId }) }, Component)
 | 服务可用性 | `GET /fnos/probe` |
 | 句柄/线程泄漏 | `Get-Process 'DeepSeek Harness' \| Sort-Object Handles -Descending \| Select -First 1` |
 | 重新装载 | 插件管理器里关一次再开（`lib/entry.js` 会带时间戳重新 import，击穿 ESM 缓存） |
+
+## 11. 不要把家目录推导成 `/vol1/<uid>`
+
+**现象**：换账号后文件选择器显示「当前账号没有文件」。
+
+**原因**：fnOS 的卷号不固定。实测某台设备数据卷是 **vol3**，
+家目录是 `/vol3/1000`；而 `user info` 只给 `uid`，给不出卷号。
+按 `/vol1/<uid>` 猜出来的路径根本不存在，`file ls` 直接返回
+`errno 65280`，前端拿到的就是空列表。
+
+**正确做法**：别猜。
+
+- `trim-cli file ls` **不带 path** 时，设备返回的就是当前登录用户目录；
+- 每条 `files[]` 自带 `v`（卷号）和 `uid`，用它拼绝对路径：
+  `{ name:"Photos", v:3, uid:1000 }` → `/vol3/1000/Photos`；
+- 前端只接收并使用服务端给的 `path`，不做任何字符串推导。
+
+**判断是否踩了这个坑**：
+
+```bash
+trim-cli file ls                 # 有内容 = 设备认这条
+trim-cli file ls /vol1/1000      # errno 65280 = 路径/权限不对
+```
